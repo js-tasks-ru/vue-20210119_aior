@@ -1,7 +1,7 @@
 import Vue from './vue.esm.browser.js';
 
 /** URL адрес API */
-const API_URL = 'https://course-vue.javascript.ru/api';
+const API_URL = 'https://course-vue.javascript.ru/api/';
 
 /** ID митапа для примера; используйте его при получении митапа */
 const MEETUP_ID = 6;
@@ -14,6 +14,7 @@ const MEETUP_ID = 6;
 function getMeetupCoverLink(meetup) {
   return `${API_URL}/images/${meetup.imageId}`;
 }
+
 
 /**
  * Словарь заголовков по умолчанию для всех типов элементов программы
@@ -47,20 +48,71 @@ const agendaItemIcons = {
 export const app = new Vue({
   el: '#app',
 
-  data: {
-    //
+  data() {
+    return {
+      meetupRaw: null,
+      agendaItemIcons: {
+        registration: 'key',
+        opening: 'cal-sm',
+        talk: 'tv',
+        break: 'clock',
+        coffee: 'coffee',
+        closing: 'key',
+        afterparty: 'cal-sm',
+        other: 'cal-sm',
+      },
+      agendaItemTitles: {
+        registration: 'Регистрация',
+        opening: 'Открытие',
+        break: 'Перерыв',
+        coffee: 'Coffee Break',
+        closing: 'Закрытие',
+        afterparty: 'Afterparty',
+        talk: 'Доклад',
+        other: 'Другое',
+      }
+    };
   },
 
   mounted() {
-    // Требуется получить данные митапа с API
+    this.getMeetup();
   },
 
   computed: {
-    //
+    meetup() {
+      if (!this.meetupRaw) {
+        return null;
+      }
+      
+      return {
+        ...this.meetupRaw,
+        localDate: new Date(this.meetupRaw.date).toLocaleString(navigator.language, {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
+        dateOnlyString: new Date(this.meetupRaw.date).toISOString().split('T')[0],
+        coverStyle: this.meetupRaw.imageId
+          ? {
+              '--bg-url': `url(https://course-vue.javascript.ru/api/images/${this.meetupRaw.imageId})`,
+            }
+          : undefined
+      };
+    },
   },
-
+  
   methods: {
-    // Получение данных с API предпочтительнее оформить отдельным методом,
-    // а не писать прямо в mounted()
-  },
+    getMeetup(){
+      fetch('https://course-vue.javascript.ru/api/meetups/6')
+      .then(response => response.json())
+      .then((meetups) => {
+        this.meetupRaw = meetups;
+      });
+    },
+
+    getIcon(){
+      alert(agendaItemIcons.indexOf( 'clock' ) != -1);
+    }
+    
+  }
 });
