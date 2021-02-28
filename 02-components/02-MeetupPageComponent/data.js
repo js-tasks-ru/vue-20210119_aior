@@ -10,7 +10,11 @@ export const MEETUP_ID = 6;
  * @return {string} - ссылка на изображение митапа
  */
 export function getMeetupCoverLink(meetup) {
-  return `${API_URL}/images/${meetup.imageId}`;
+  if(!meetup.imageId) {
+    return '';
+  } else {
+    return `${API_URL}/images/${meetup.imageId}`;
+  }
 }
 
 /**

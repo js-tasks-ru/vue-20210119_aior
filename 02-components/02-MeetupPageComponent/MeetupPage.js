@@ -27,12 +27,4 @@ export const MeetupPage = {
       });
     }
   },
-
-  computed: {
-    meetup() {
-      if (!this.meetupRaw) {
-        return null;
-      }
-    },
-  },
 };
